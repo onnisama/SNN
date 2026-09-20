@@ -13,12 +13,12 @@ export function ChapterQuiz({ quizzes }: { quizzes: Quiz[] }) {
         return <div className="quiz-item" key={quiz.question}>
           <h3><span>{String(quizIndex + 1).padStart(2, "0")}</span>{quiz.question}</h3>
           {quiz.options.map((option, index) => (
-            <button className={choice === index ? "selected" : ""} key={option} onClick={() => setSelected(current => ({ ...current, [quizIndex]: index }))}>
+            <button type="button" aria-pressed={choice === index} className={choice === index ? "selected" : ""} key={option} onClick={() => setSelected(current => ({ ...current, [quizIndex]: index }))}>
               {String.fromCharCode(65 + index)}. {option}
             </button>
           ))}
           {choice !== undefined && (
-            <div className="quiz-result">
+            <div className="quiz-result" role="status" aria-live="polite">
               <b>{choice === quiz.answer ? "回答正确" : `再想一步：正确答案是 ${String.fromCharCode(65 + quiz.answer)}`}</b>
               <p>{quiz.explanation}</p>
             </div>

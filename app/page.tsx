@@ -5,11 +5,15 @@ import { ArrowRight, FlaskConical, Library } from "lucide-react";
 import { chapters, totalMinutes } from "@/data/chapters";
 import { useCourseProgress } from "@/components/CourseProgress";
 import { HomeMembraneLab } from "@/components/HomeMembraneLab";
+import { papers } from "@/data/papers";
 
 const labNames = ["Spike Train", "LIF Simulator", "Spike Encoding", "Surrogate", "BPTT", "ANN vs SNN", "Event Camera"];
 
 export default function Home() {
-  const { isComplete } = useCourseProgress();
+  const { isComplete, completed } = useCourseProgress();
+  const nextChapter = chapters.find(chapter => !completed.includes(chapter.slug));
+  const primaryHref = nextChapter ? `/course/${nextChapter.slug}/` : "/finish/";
+  const primaryLabel = completed.length === 0 ? "按顺序开始" : nextChapter ? `继续：${nextChapter.title}` : "查看完成页";
   return (
     <div className="page-shell">
       <section className="hero-grid">
@@ -18,14 +22,14 @@ export default function Home() {
           <h1>一个神经元，<br/>为什么要<span>记住过去？</span></h1>
           <p className="hero-lead">普通神经网络把输入映射成输出；脉冲神经元还要携带上一时刻的状态。先观察膜电位怎样积累、泄漏与发放，再进入公式。</p>
           <div className="hero-actions">
-            <Link className="button" href="/course/ann-vs-snn/">按顺序开始 <ArrowRight size={17} /></Link>
-            <Link className="button secondary" href="/labs/"><FlaskConical size={17} /> 自由实验</Link>
+            <Link className="button" href={primaryHref}>{primaryLabel} <ArrowRight size={17} aria-hidden="true" /></Link>
+            <Link className="button secondary" href="/labs/"><FlaskConical size={17} aria-hidden="true" /> 自由实验</Link>
           </div>
         </div>
         <div className="hero-panel"><HomeMembraneLab /></div>
       </section>
 
-      <div className="course-facts"><span><b>12</b> 个递进章节</span><span><b>7</b> 个可操作实验</span><span><b>{totalMinutes}</b> 分钟核心路径</span><span><b>22</b> 篇核验论文</span></div>
+      <div className="course-facts"><span><b>{chapters.length}</b> 个递进章节</span><span><b>7</b> 个可操作实验</span><span><b>{totalMinutes}</b> 分钟核心路径</span><span><b>{papers.length}</b> 篇核验论文</span></div>
 
       <div className="section-head">
         <span className="folio">01</span>
@@ -73,7 +77,7 @@ export default function Home() {
         <div className="principle"><h3>Ops ≠ Energy</h3><p>稀疏 AC 的理论优势只有在实际执行跳过零值、减少数据移动时才可能兑现。</p></div>
       </section>
       <div className="hero-actions" style={{ padding: "34px 0 80px" }}>
-        <Link className="button" href="/papers/"><Library size={17}/> 浏览已核验论文库</Link>
+        <Link className="button" href="/papers/"><Library size={17} aria-hidden="true"/> 浏览已核验论文库</Link>
         <Link className="button secondary" href="/code-lab/">进入完整代码实验</Link>
       </div>
     </div>

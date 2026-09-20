@@ -17,6 +17,7 @@ export default async function ChapterPage({ params }: { params: Promise<{ slug: 
   const chapter = chapters.find(item => item.slug === slug);
   if (!chapter) notFound();
   const next = chapters[chapter.number] ?? null;
+  const previous = chapters[chapter.number - 2] ?? null;
   const sections = ["intuitive","why","math","visualization","walkthrough","code","experiment","mistakes","research","quiz"];
   return (
     <div className="page-shell">
@@ -40,7 +41,10 @@ export default async function ChapterPage({ params }: { params: Promise<{ slug: 
           <section id="mistakes"><h2>Common Mistakes · 常见误区</h2><div className="callout warning">{chapter.mistake}</div></section>
           <section id="research"><h2>Research Connection</h2><div className="callout research">{chapter.research}<p style={{marginBottom:0,marginTop:12}}><Link href="/papers/" style={{textDecoration:"underline"}}>进入论文库 →</Link></p></div></section>
           <section id="quiz"><h2>Checkpoint</h2><ChapterQuiz quizzes={[chapter.quiz, ...(extraQuizzes[chapter.slug] ?? [])]}/></section>
-          {next ? <Link className="button" href={`/course/${next.slug}/`}>下一章：{next.title} →</Link> : <Link className="button" href="/finish/">完成课程，选择研究方向 →</Link>}
+          <nav className="chapter-navigation" aria-label="章节翻页">
+            {previous ? <Link className="button secondary" href={`/course/${previous.slug}/`}>← 上一章：{previous.title}</Link> : <Link className="button secondary" href="/">← 返回学习路线</Link>}
+            {next ? <Link className="button" href={`/course/${next.slug}/`}>下一章：{next.title} →</Link> : <Link className="button" href="/finish/">完成课程，选择研究方向 →</Link>}
+          </nav>
         </article>
         <aside className="aside-note"><b>学习提示</b>先在移动参数前写下预测。SNN 的理解来自逐时间步追踪状态，而不是记住术语。<CompleteChapter slug={chapter.slug}/></aside>
       </div>
