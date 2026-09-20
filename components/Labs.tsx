@@ -18,22 +18,24 @@ function Slider({ label, value, min, max, step, onChange }: {label:string;value:
 function SpikeTrainLab() {
   const [rate,setRate]=useState(35), [duration,setDuration]=useState(1000), [seed,setSeed]=useState(7);
   const spikes=useMemo(()=>{const rand=seeded(seed); const dt=10; return Array.from({length:duration/dt},(_,i)=>rand()<rate*dt/1000?i*dt:null).filter(v=>v!==null) as number[]},[rate,duration,seed]);
+  const meanIsi=spikes.length>1?Math.round(spikes.slice(1).reduce((sum,t,i)=>sum+t-spikes[i],0)/(spikes.length-1)):null;
   return <Lab title="Spike Train Generator" intro="Poisson rate coding：每个 10 ms 时间格以 p = rate × Δt 发放。固定 seed 后，只改变 rate，便于可重复比较。">
-    <div className="controls"><Slider label="firing rate / Hz" value={rate} min={0} max={100} step={1} onChange={setRate}/><Slider label="duration / ms" value={duration} min={200} max={2000} step={100} onChange={setDuration}/><Slider label="random seed" value={seed} min={1} max={50} step={1} onChange={setSeed}/><div className="callout"><b>{spikes.length}</b> spikes · 实测 {Math.round(spikes.length/(duration/1000))} Hz</div></div>
+    <div className="controls"><Slider label="firing rate / Hz" value={rate} min={0} max={100} step={1} onChange={setRate}/><Slider label="duration / ms" value={duration} min={200} max={2000} step={100} onChange={setDuration}/><Slider label="random seed" value={seed} min={1} max={50} step={1} onChange={setSeed}/><div className="callout"><b>{spikes.length}</b> spikes · 实测 {Math.round(spikes.length/(duration/1000))} Hz<br/>平均 ISI：{meanIsi===null?"不足两个 spike":`${meanIsi} ms`}</div></div>
     <div className="viz"><svg viewBox="0 0 760 280" role="img" aria-label="生成的 spike train"><line x1="50" y1="220" x2="730" y2="220" stroke={ink}/>{[0,.25,.5,.75,1].map(v=><g key={v}><line x1={50+680*v} y1="215" x2={50+680*v} y2="225" stroke={ink}/><text x={50+680*v} y="248" textAnchor="middle" fontSize="12">{Math.round(duration*v)} ms</text></g>)}{spikes.map(t=><line key={t} x1={50+680*t/duration} y1="65" x2={50+680*t/duration} y2="220" stroke={blue} strokeWidth="2"/>)}<text x="50" y="36" fontSize="14" fill={blue}>spike train · 固定 seed 可重放</text></svg></div>
   </Lab>
 }
 
-function simulateLif(current:number,beta:number,threshold:number,reset:number,steps:number) {
-  let mem=0; const data=[]; for(let t=0;t<steps;t++){const input=t<3?0:current*(.82+.18*Math.sin(t*.55)); mem=beta*mem+input; const spike=mem>=threshold?1:0; const before=mem; if(spike) mem=reset===0?mem-threshold:0; data.push({t,input,mem:before,spike,after:mem});} return data;
+function simulateLif(current:number,beta:number,threshold:number,reset:number,steps:number,pattern:"steady"|"burst"="steady") {
+  let mem=0; const data=[]; for(let t=0;t<steps;t++){const input=t<3?0:pattern==="burst"?(t%12<4?current:.04):current*(.82+.18*Math.sin(t*.55)); mem=beta*mem+input; const spike=mem>=threshold?1:0; const before=mem; if(spike) mem=reset===0?mem-threshold:0; data.push({t,input,mem:before,spike,after:mem});} return data;
 }
-function linePath(vals:number[], max:number, w=650,h=220){return vals.map((v,i)=>`${i?"L":"M"} ${55+i*w/Math.max(1,vals.length-1)} ${35+h-(v/max)*h}`).join(" ")}
+function linePath(vals:number[], max:number, w=650,h=220){return vals.map((v,i)=>`${i?"L":"M"} ${(55+i*w/Math.max(1,vals.length-1)).toFixed(2)} ${(35+h-(v/max)*h).toFixed(2)}`).join(" ")}
 function LIFLab() {
-  const [current,setCurrent]=useState(.34),[beta,setBeta]=useState(.85),[threshold,setThreshold]=useState(1),[reset,setReset]=useState(0),[steps,setSteps]=useState(30);
-  const data=useMemo(()=>simulateLif(current,beta,threshold,reset,steps),[current,beta,threshold,reset,steps]);
+  const [current,setCurrent]=useState(.34),[beta,setBeta]=useState(.85),[threshold,setThreshold]=useState(1),[reset,setReset]=useState(0),[steps,setSteps]=useState(30),[pattern,setPattern]=useState<"steady"|"burst">("steady");
+  const data=useMemo(()=>simulateLif(current,beta,threshold,reset,steps,pattern),[current,beta,threshold,reset,steps,pattern]);
   const max=Math.max(threshold*1.3,...data.map(d=>d.mem));
+  const preset=(name:string)=>{setPattern("steady"); if(name==="Weak"){setCurrent(.18);setBeta(.82);setThreshold(1)} if(name==="Strong"){setCurrent(.55);setBeta(.82);setThreshold(1)} if(name==="Slow"){setCurrent(.28);setBeta(.96);setThreshold(1)} if(name==="Fast"){setCurrent(.38);setBeta(.45);setThreshold(1)} if(name==="Burst"){setCurrent(.58);setBeta(.88);setThreshold(1);setPattern("burst")}};
   return <Lab title="LIF Simulator" intro="膜电位先泄漏并接收电流；越过阈值后产生 spike，再执行 subtract reset 或 hard reset。">
-    <div className="controls"><Slider label="input current" value={current} min={0} max={.8} step={.01} onChange={setCurrent}/><Slider label="beta / decay" value={beta} min={0} max={.99} step={.01} onChange={setBeta}/><Slider label="threshold" value={threshold} min={.3} max={2} step={.05} onChange={setThreshold}/><Slider label="time steps" value={steps} min={10} max={60} step={1} onChange={setSteps}/><div className="control"><label>reset rule</label><select value={reset} onChange={e=>setReset(Number(e.target.value))}><option value={0}>subtract threshold</option><option value={1}>hard reset to zero</option></select></div></div>
+    <div className="controls"><div className="preset-row">{["Weak","Strong","Slow","Fast","Burst"].map(name=><button key={name} onClick={()=>preset(name)}>{name}</button>)}</div><Slider label="input current" value={current} min={0} max={.8} step={.01} onChange={setCurrent}/><Slider label="beta / decay" value={beta} min={0} max={.99} step={.01} onChange={setBeta}/><Slider label="threshold" value={threshold} min={.3} max={2} step={.05} onChange={setThreshold}/><Slider label="time steps" value={steps} min={10} max={60} step={1} onChange={setSteps}/><div className="control"><label>reset rule</label><select value={reset} onChange={e=>setReset(Number(e.target.value))}><option value={0}>subtract threshold</option><option value={1}>hard reset to zero</option></select></div></div>
     <div className="viz"><div className="legend"><span><i style={{background:blue}}/>membrane</span><span><i style={{background:red}}/>threshold</span><span><i style={{background:green}}/>input</span></div><svg viewBox="0 0 760 310"><path d={linePath(data.map(d=>d.mem),max)} fill="none" stroke={blue} strokeWidth="3"/><path d={linePath(data.map(d=>d.input),max)} fill="none" stroke={green} strokeWidth="2"/><line x1="55" y1={255-threshold/max*220} x2="705" y2={255-threshold/max*220} stroke={red} strokeDasharray="6 5"/>{data.filter(d=>d.spike).map(d=><line key={d.t} x1={55+d.t*650/(steps-1)} y1="275" x2={55+d.t*650/(steps-1)} y2="260" stroke={ink} strokeWidth="3"/>)}<line x1="55" y1="255" x2="705" y2="255" stroke={grid}/><text x="55" y="292" fontSize="12">spikes 显示为底部短线 · 共 {data.filter(d=>d.spike).length} 次</text></svg></div>
   </Lab>
 }
@@ -51,11 +53,26 @@ function EncodingLab(){
 function SurrogateLab(){
   const [kind,setKind]=useState("Fast sigmoid"),[slope,setSlope]=useState(5);
   const pts=Array.from({length:121},(_,i)=>-2+i/30);
-  const surrogate=(x:number)=> kind==="Sigmoid"?1/(1+Math.exp(-slope*x)):kind==="Arctan"?Math.atan(slope*x)/Math.PI+.5:.5*(x/(1+Math.abs(slope*x))+.5);
-  const deriv=(x:number)=>kind==="Sigmoid"?slope*Math.exp(-slope*x)/Math.pow(1+Math.exp(-slope*x),2):kind==="Arctan"?slope/(Math.PI*(1+slope*slope*x*x)):1/Math.pow(1+slope*Math.abs(x),2);
+  const surrogate=(x:number)=>{
+    if(kind==="Sigmoid") return 1/(1+Math.exp(-slope*x));
+    if(kind==="Arctan") return Math.atan(slope*x)/Math.PI+.5;
+    if(kind==="Triangular"){
+      if(x<=-1/slope) return 0;
+      if(x<0) return .5*Math.pow(1+slope*x,2);
+      if(x<1/slope) return 1-.5*Math.pow(1-slope*x,2);
+      return 1;
+    }
+    return .5*(slope*x/(1+Math.abs(slope*x))+1);
+  };
+  const deriv=(x:number)=>{
+    if(kind==="Sigmoid") return slope*Math.exp(-slope*x)/Math.pow(1+Math.exp(-slope*x),2);
+    if(kind==="Arctan") return slope/(Math.PI*(1+slope*slope*x*x));
+    if(kind==="Triangular") return slope*Math.max(0,1-slope*Math.abs(x));
+    return slope/(2*Math.pow(1+slope*Math.abs(x),2));
+  };
   const path=(f:(x:number)=>number,offset:number,scale:number)=>pts.map((x,i)=>`${i?"L":"M"} ${70+i*620/(pts.length-1)} ${offset-f(x)*scale}`).join(" ");
   return <Lab title="Surrogate Gradient" intro="蓝线是 forward 使用的 Heaviside；红线只帮助理解平滑近似；绿线才是 backward 实际使用的局部梯度。">
-    <div className="controls"><div className="control"><label>surrogate family</label><select value={kind} onChange={e=>setKind(e.target.value)}><option>Sigmoid</option><option>Fast sigmoid</option><option>Arctan</option></select></div><Slider label="slope" value={slope} min={1} max={20} step={1} onChange={setSlope}/><div className="callout warning"><b>关键：</b>训练前向输出仍是 H(u) 的 0/1。平滑曲线不替代实际 spike。</div></div>
+    <div className="controls"><div className="control"><label>surrogate family</label><select value={kind} onChange={e=>setKind(e.target.value)}><option>Sigmoid</option><option>Fast sigmoid</option><option>Arctan</option><option>Triangular</option></select></div><Slider label="slope" value={slope} min={1} max={20} step={1} onChange={setSlope}/><div className="callout warning"><b>关键：</b>训练前向输出仍是 H(u) 的 0/1。平滑曲线不替代实际 spike。</div></div>
     <div className="viz"><div className="legend"><span><i style={{background:blue}}/>Heaviside forward</span><span><i style={{background:red}}/>surrogate function</span><span><i style={{background:green}}/>surrogate derivative</span></div><svg viewBox="0 0 760 340"><line x1="70" y1="270" x2="690" y2="270" stroke={grid}/><line x1="380" y1="30" x2="380" y2="290" stroke={grid}/><path d="M 70 270 L 379 270 L 381 70 L 690 70" fill="none" stroke={blue} strokeWidth="3"/><path d={path(surrogate,270,200)} fill="none" stroke={red} strokeWidth="2"/><path d={path(deriv,270,Math.min(80,180/slope))} fill="none" stroke={green} strokeWidth="3"/><text x="380" y="318" textAnchor="middle" fontSize="12">u = V − Vth</text></svg></div>
   </Lab>
 }

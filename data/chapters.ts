@@ -24,7 +24,7 @@ export type Chapter = {
 
 export const chapters: Chapter[] = [
   {
-    slug: "ann-vs-snn", number: 1, title: "ANN vs SNN", subtitle: "从一次映射到状态随时间演化", minutes: 24,
+    slug: "ann-vs-snn", number: 1, title: "ANN vs SNN", subtitle: "从一次映射到状态随时间演化", minutes: 35,
     intuition: [
       "ANN 神经元通常对一批输入做一次加权求和，再通过连续激活函数输出一个数。SNN 神经元则保留内部状态：同一输入在不同时间到达，会得到不同结果。",
       "Spike 是某个时间步是否发放的事件，单个 spike 本身只含“发生/未发生”，信息来自一串 spike 的计数、精确时刻、群体模式以及它们与状态的关系。",
@@ -46,7 +46,7 @@ export const chapters: Chapter[] = [
     quiz: { question: "下面哪一项最能说明 SNN 不只是二值 ANN？", options: ["权重只能取 0/1", "神经元保留跨时间步状态", "每层都必须是卷积", "只能处理事件相机"], answer: 1, explanation: "膜电位等状态把历史输入带到后续时间步，这是 SNN 的核心时序语义。" }
   },
   {
-    slug: "lif-neuron", number: 2, title: "IF / LIF 神经元", subtitle: "积分、泄漏、阈值、发放与重置", minutes: 38,
+    slug: "lif-neuron", number: 2, title: "IF / LIF 神经元", subtitle: "积分、泄漏、阈值、发放与重置", minutes: 60,
     intuition: [
       "把膜电位想成一只有漏孔的杯子：输入电流向杯中加水，leak 持续排水；水位越过阈值就产生 spike，随后水位被重置。",
       "IF 没有漏孔，过去输入会永久积累；LIF 用泄漏让较早输入的影响指数衰减，因此具有有限时间尺度。"
@@ -77,7 +77,7 @@ export const chapters: Chapter[] = [
     quiz: { question: "V[t-1]=0.7，β=0.8，I[t]=0.5，阈值 1。更新后会怎样？", options: ["V=0.56，不发放", "V=1.06，发放", "V=1.20，发放", "V=0.90，不发放"], answer: 1, explanation: "V[t]=0.8×0.7+0.5=1.06，超过阈值，因此产生 spike；之后再按选定 reset 规则更新膜电位。" }
   },
   {
-    slug: "temporal-dynamics", number: 3, title: "Temporal Dynamics", subtitle: "沿时间步执行一次真正的前向传播", minutes: 30,
+    slug: "temporal-dynamics", number: 3, title: "Temporal Dynamics", subtitle: "沿时间步执行一次真正的前向传播", minutes: 45,
     intuition: ["SNN 的一次 forward 不是只穿过网络深度，还要沿时间轴重复更新。每一步都读取本步输入与上一步状态。", "即使 t=2 没有输入 spike，t=1 留下的膜电位仍可能影响输出；这就是状态记忆。"],
     why: "没有时间展开，就看不到膜电位如何连接相邻时间步，也无法理解 BPTT 为什么需要保存中间状态。",
     math: [
@@ -94,7 +94,7 @@ export const chapters: Chapter[] = [
     quiz: { question: "本步输入为 0 时，LIF 是否一定无法发放？", options: ["一定无法", "不一定，历史膜电位可能仍足够高", "只有第一层可以", "只在 rate coding 中可以"], answer: 1, explanation: "膜电位携带历史；取决于泄漏、上一步状态、reset 规则和阈值。" }
   },
   {
-    slug: "spike-encoding", number: 4, title: "Spike Encoding", subtitle: "数值怎样进入时间域", minutes: 32,
+    slug: "spike-encoding", number: 4, title: "Spike Encoding", subtitle: "数值怎样进入时间域", minutes: 45,
     intuition: ["Rate coding 用观察窗内 spike 数量表达强度；temporal coding 用发放时刻表达信息。前者冗余而稳健，后者稀疏且低延迟但对时序噪声更敏感。"],
     why: "静态图像本来没有时间轴。编码方案决定了信息复制次数、延迟、稀疏度和网络能否利用精确时序。",
     math: [
@@ -111,7 +111,7 @@ export const chapters: Chapter[] = [
     quiz: { question: "需要极低 spike 数且能容忍时间抖动较小的传感链路，优先考虑？", options: ["Rate coding", "Latency/temporal coding", "无限时间步", "随机重置"], answer: 1, explanation: "单次或少量 spike 的时刻可携带信息，稀疏且低延迟；代价是对时序噪声更敏感。" }
   },
   {
-    slug: "surrogate-gradient", number: 5, title: "Surrogate Gradient", subtitle: "前向是真 spike，反向借一座可导的桥", minutes: 40,
+    slug: "surrogate-gradient", number: 5, title: "Surrogate Gradient", subtitle: "前向是真 spike，反向借一座可导的桥", minutes: 55,
     intuition: ["Heaviside 在阈值外导数为 0，在阈值处不可导。直接交给梯度下降，权重几乎收不到有用信号。", "Surrogate gradient 不改变前向的 0/1 spike，只在 backward 把不存在或无用的导数替换为阈值附近的平滑斜率。"],
     why: "它让误差信号能够从 spike 穿回膜电位，再穿回突触权重，同时保留真实的离散前向行为。",
     math: [
@@ -140,7 +140,7 @@ export const chapters: Chapter[] = [
     quiz: { question: "Surrogate gradient 主要替换哪一部分？", options: ["前向 spike 值", "反向的局部导数", "输入编码", "损失函数标签"], answer: 1, explanation: "前向保持硬阈值；反向使用可导近似提供梯度估计。" }
   },
   {
-    slug: "bptt", number: 6, title: "BPTT", subtitle: "把状态沿时间展开，再反向穿越", minutes: 42,
+    slug: "bptt", number: 6, title: "BPTT", subtitle: "把状态沿时间展开，再反向穿越", minutes: 60,
     intuition: ["把同一个 LIF 单元在 t₀、t₁、t₂、t₃ 复制展开，复制体共享权重，状态边把它们串起来。Loss 可以从最后或所有时间步产生。"],
     why: "当前 spike 依赖当前膜电位，而当前膜电位依赖上一步。梯度必须跨越这条递归状态链才能把延迟误差归因到早期输入和共享权重。",
     math: [
@@ -157,7 +157,7 @@ export const chapters: Chapter[] = [
     quiz: { question: "BPTT 中为什么同一权重会收到多个时间步的梯度？", options: ["每步权重不同", "展开节点共享参数，梯度贡献需在时间上求和", "因为 spike 是随机的", "因为必须使用 CNN"], answer: 1, explanation: "时间展开复制的是计算节点，不是参数；共享权重在各时间步参与计算，所以梯度相加。" }
   },
   {
-    slug: "first-snn", number: 7, title: "实现第一个 SNN", subtitle: "从手写 LIF 到可训练分类器", minutes: 55,
+    slug: "first-snn", number: 7, title: "实现第一个 SNN", subtitle: "从手写 LIF 到可训练分类器", minutes: 75,
     intuition: ["训练循环的骨架与普通 PyTorch 类似：数据、前向、损失、backward、optimizer。差异集中在时间循环、状态初始化、spike 读出和 surrogate backward。"],
     why: "只有亲手管理状态与时间维，才能辨认框架 API 隐藏了哪些假设。",
     math: [
@@ -189,7 +189,7 @@ export const chapters: Chapter[] = [
     quiz: { question: "哪个操作应该在 loss.backward() 之前？", options: ["对类别结果 argmax", "构造可导 logits 并计算 loss", "把所有状态转成 NumPy", "detach 全部 spike"], answer: 1, explanation: "训练需要从可导读出保留计算图；argmax 与 NumPy 都会中断梯度。" }
   },
   {
-    slug: "conv-snn", number: 8, title: "Convolutional SNN", subtitle: "空间卷积与时间状态同时存在", minutes: 30,
+    slug: "conv-snn", number: 8, title: "Convolutional SNN", subtitle: "空间卷积与时间状态同时存在", minutes: 45,
     intuition: ["Conv 提取每个时间步的空间局部特征，LIF 在同一空间位置上沿时间积累。典型模块是 Conv → Norm → LIF。"],
     why: "事件帧和图像有二维结构。只用全连接会丢掉平移共享与局部感受野。",
     math: [
@@ -206,7 +206,7 @@ export const chapters: Chapter[] = [
     quiz: { question: "[T,B,C,H,W] 中哪一维承载同一神经元跨步状态？", options: ["T", "B", "C", "W"], answer: 0, explanation: "时间维 T 排列同一序列的多个状态；B 表示彼此独立的样本。" }
   },
   {
-    slug: "event-camera", number: 9, title: "Event Camera × SNN", subtitle: "异步亮度变化与脉冲计算的契合边界", minutes: 42,
+    slug: "event-camera", number: 9, title: "Event Camera × SNN", subtitle: "异步亮度变化与脉冲计算的契合边界", minutes: 60,
     intuition: ["事件相机不定时输出整张图，而是像素在对数亮度变化越过阈值时产生事件 e=(x,y,t,p)。p 表示变亮或变暗。", "事件流稀疏、异步、时间精度高，与 SNN 的状态和事件通信很契合；但 CNN、Transformer 同样可以处理事件表示。"],
     why: "事件相机在高速运动、高动态范围与低冗余场景很有价值。算法选择取决于任务、表示、硬件和延迟，不由传感器名称决定。",
     math: [
@@ -224,7 +224,7 @@ export const chapters: Chapter[] = [
     quiz: { question: "下列哪项是正确的？", options: ["事件相机只能输出二值图", "事件相机必须搭配 SNN", "事件流可转成 frame/voxel 后交给 ANN", "极性表示物体类别"], answer: 2, explanation: "事件是异步数据；表示与下游架构是可独立选择的设计决策。" }
   },
   {
-    slug: "ann-to-snn", number: 10, title: "ANN-to-SNN Conversion", subtitle: "把连续激活映射为发放率", minutes: 34,
+    slug: "ann-to-snn", number: 10, title: "ANN-to-SNN Conversion", subtitle: "把连续激活映射为发放率", minutes: 45,
     intuition: ["先训练 ANN，再让 SNN 在一段时间内用 spike count 逼近 ReLU 激活。时间越长，rate 近似通常越细，但延迟也越大。"],
     why: "Conversion 借用成熟 ANN 训练配方，避免直接训练深层 SNN 的梯度困难；代价是转换误差、阈值校准与时间步需求。",
     math: [
@@ -241,7 +241,7 @@ export const chapters: Chapter[] = [
     quiz: { question: "为什么增加 T 往往能降低 rate-based conversion 误差？", options: ["权重自动变大", "spike count 的分辨率从 1/T 变细", "阈值消失", "不再需要 reset"], answer: 1, explanation: "有限窗口把连续值量化为整数 spike 数；T 越大，可表示的平均率级别越密。" }
   },
   {
-    slug: "deep-snn", number: 11, title: "Modern Deep SNN", subtitle: "ResNet 与 Transformer 如何获得脉冲语义", minutes: 38,
+    slug: "deep-snn", number: 11, title: "Modern Deep SNN", subtitle: "ResNet 与 Transformer 如何获得脉冲语义", minutes: 55,
     intuition: ["现代 SNN 借鉴 ANN 的宏观骨架，但必须重新考虑 spike 激活的位置、残差相加后的值域、时序状态和 attention 中的乘法。"],
     why: "简单替换 ReLU 会破坏 identity mapping 或产生非二值残差。架构设计要同时维护优化路径与事件驱动可部署性。",
     math: [
@@ -258,7 +258,7 @@ export const chapters: Chapter[] = [
     quiz: { question: "判断 Spiking Transformer 是否真正事件驱动，最关键的检查是？", options: ["名字是否含 Spike", "逐算子查看零输入是否能跳过计算及是否仍有稠密乘法", "参数是否超过 1M", "是否使用 ImageNet"], answer: 1, explanation: "事件驱动是执行语义，不是命名；需要检查算子和硬件映射。" }
   },
   {
-    slug: "efficiency", number: 12, title: "Efficiency & Neuromorphic", subtitle: "能效优势成立需要哪些条件", minutes: 36,
+    slug: "efficiency", number: 12, title: "Efficiency & Neuromorphic", subtitle: "能效优势成立需要哪些条件", minutes: 50,
     intuition: ["SNN 的潜力来自稀疏事件、加法式突触累加和局部状态。但在普通 GPU 上，时间循环、稠密张量和 BPTT 可能让它比 ANN 更慢、更耗显存。"],
     why: "“理论操作更少”不等于“整机能量更低”。算法、实现、内存访问、芯片数据流与任务精度必须共同评估。",
     math: [

@@ -17,7 +17,7 @@ export function HomeMembraneLab() {
       return { t, input, mem: beforeReset, spike };
     });
   }, [current, beta]);
-  const path = trace.map((p, i) => `${i ? "L" : "M"} ${28 + i * 25.4} ${164 - Math.min(1.25, p.mem) * 100}`).join(" ");
+  const path = trace.map((p, i) => `${i ? "L" : "M"} ${(28 + i * 25.4).toFixed(1)} ${(164 - Math.min(1.25, p.mem) * 100).toFixed(2)}`).join(" ");
 
   return (
     <div className="home-experiment">

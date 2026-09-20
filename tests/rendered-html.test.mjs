@@ -27,5 +27,15 @@ test("all rendered course chapters contain valid KaTeX without error nodes", asy
     const html = await readFile(filename, "utf8");
     assert.match(html, /class="katex"/, filename);
     assert.doesNotMatch(html, /katex-error/, filename);
+    assert.equal((html.match(/class="deep-dive"/g) ?? []).length, 2, filename);
+    assert.equal((html.match(/class="quiz-item"/g) ?? []).length, 3, filename);
   }
+});
+
+test("completion page and runnable training script are included in the export", async () => {
+  const finish = await readFile(path.join(root, "out", "finish", "index.html"), "utf8");
+  const script = await readFile(path.join(root, "out", "train_mnist_snn.py"), "utf8");
+  assert.match(finish, /You Finished/);
+  assert.match(script, /class SpikingCNN/);
+  assert.match(script, /hidden_spike_rate/);
 });
