@@ -5,6 +5,8 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "test": "npm run build && npm run test:render",
+    "test:render": "node --test tests/rendered-html.test.mjs",
     "start": "next start",
     "lint": "next lint"
   },

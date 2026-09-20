@@ -32,9 +32,9 @@ export const chapters: Chapter[] = [
     ],
     why: "如果输入本身带有时间结构，或硬件能跳过无事件的计算，那么“何时发生”与“是否发生”都可以成为有效信息。",
     math: [
-      { label: "ANN", latex: "y = \phi(\mathbf{w}^{\top}\mathbf{x}+b)", explain: "输入被一次性映射成连续激活。" },
-      { label: "SNN", latex: "S[t] = H(V[t]-V_{th})", explain: "输出取决于当前膜电位，而膜电位又依赖历史。" },
-      { label: "发放率", latex: "r = \frac{1}{T\Delta t}\sum_{t=1}^{T}S[t]", explain: "观察窗口内 spike 数量除以总时长。" }
+      { label: "ANN", latex: String.raw`y = \phi(\mathbf{w}^{\top}\mathbf{x}+b)`, explain: "输入被一次性映射成连续激活。" },
+      { label: "SNN", latex: String.raw`S[t] = H(V[t]-V_{th})`, explain: "输出取决于当前膜电位，而膜电位又依赖历史。" },
+      { label: "发放率", latex: String.raw`r = \frac{1}{T\Delta t}\sum_{t=1}^{T}S[t]`, explain: "观察窗口内 spike 数量除以总时长。" }
     ],
     concepts: [
       { title: "Spike train", body: "沿离散时间轴排列的 0/1 序列；也可表示成一组发放时刻。" },
@@ -53,9 +53,9 @@ export const chapters: Chapter[] = [
     ],
     why: "LIF 是复杂生物神经元的可计算近似：它保留最关键的积分、记忆与发放机制，同时容易离散化和批量训练。",
     math: [
-      { label: "连续 LIF", latex: "\tau_m\frac{dV}{dt}=-(V-V_{rest})+RI(t)", explain: "时间常数 τₘ 决定状态遗忘速度。" },
-      { label: "离散更新", latex: "V[t]=\beta V[t-1]+I[t]", explain: "β 常取 exp(-Δt/τₘ)，Δt 越大，每步泄漏越强。" },
-      { label: "发放与软重置", latex: "S[t]=H(V[t]-V_{th}),\quad V[t]\leftarrow V[t]-S[t]V_{th}", explain: "软重置保留超过阈值的余量；硬重置则直接回到指定电位。" }
+      { label: "连续 LIF", latex: String.raw`\tau_m\frac{dV}{dt}=-(V-V_{rest})+RI(t)`, explain: "时间常数 τₘ 决定状态遗忘速度。" },
+      { label: "离散更新", latex: String.raw`V[t]=\beta V[t-1]+I[t]`, explain: "β 常取 exp(-Δt/τₘ)，Δt 越大，每步泄漏越强。" },
+      { label: "发放与软重置", latex: String.raw`S[t]=H(V[t]-V_{th}),\quad V[t]\leftarrow V[t]-S[t]V_{th}`, explain: "软重置保留超过阈值的余量；硬重置则直接回到指定电位。" }
     ],
     concepts: [
       { title: "Membrane potential", body: "神经元的隐藏状态，不是输出概率。它积累输入，也随时间泄漏。" },
@@ -81,8 +81,8 @@ export const chapters: Chapter[] = [
     intuition: ["SNN 的一次 forward 不是只穿过网络深度，还要沿时间轴重复更新。每一步都读取本步输入与上一步状态。", "即使 t=2 没有输入 spike，t=1 留下的膜电位仍可能影响输出；这就是状态记忆。"],
     why: "没有时间展开，就看不到膜电位如何连接相邻时间步，也无法理解 BPTT 为什么需要保存中间状态。",
     math: [
-      { label: "突触电流", latex: "I^{(l)}[t]=W^{(l)}S^{(l-1)}[t]", explain: "当前层接收前一层当前时刻的 spike。" },
-      { label: "状态更新", latex: "V^{(l)}[t]=\beta V^{(l)}[t-1]+I^{(l)}[t]-S^{(l)}[t-1]V_{th}", explain: "深度依赖与时间依赖同时存在。" }
+      { label: "突触电流", latex: String.raw`I^{(l)}[t]=W^{(l)}S^{(l-1)}[t]`, explain: "当前层接收前一层当前时刻的 spike。" },
+      { label: "状态更新", latex: String.raw`V^{(l)}[t]=\beta V^{(l)}[t-1]+I^{(l)}[t]-S^{(l)}[t-1]V_{th}`, explain: "深度依赖与时间依赖同时存在。" }
     ],
     concepts: [
       { title: "Time-major tensor", body: "[T, B, …] 把时间放在首维；也有库使用 [B, T, …]，进入模型前必须确认。" },
@@ -98,8 +98,8 @@ export const chapters: Chapter[] = [
     intuition: ["Rate coding 用观察窗内 spike 数量表达强度；temporal coding 用发放时刻表达信息。前者冗余而稳健，后者稀疏且低延迟但对时序噪声更敏感。"],
     why: "静态图像本来没有时间轴。编码方案决定了信息复制次数、延迟、稀疏度和网络能否利用精确时序。",
     math: [
-      { label: "Poisson rate", latex: "S[t]\sim\mathrm{Bernoulli}(p=x\Delta t)", explain: "归一化强度控制每步发放概率。" },
-      { label: "Latency", latex: "t_{spike}=t_{min}+(1-x)(t_{max}-t_{min})", explain: "强输入更早发放，通常每个神经元只发一次。" }
+      { label: "Poisson rate", latex: String.raw`S[t]\sim\mathrm{Bernoulli}(p=x\Delta t)`, explain: "归一化强度控制每步发放概率。" },
+      { label: "Latency", latex: String.raw`t_{spike}=t_{min}+(1-x)(t_{max}-t_{min})`, explain: "强输入更早发放，通常每个神经元只发一次。" }
     ],
     concepts: [
       { title: "Population coding", body: "由一组具有不同感受野的神经元共同编码一个变量，提高分辨率与鲁棒性。" },
@@ -115,9 +115,9 @@ export const chapters: Chapter[] = [
     intuition: ["Heaviside 在阈值外导数为 0，在阈值处不可导。直接交给梯度下降，权重几乎收不到有用信号。", "Surrogate gradient 不改变前向的 0/1 spike，只在 backward 把不存在或无用的导数替换为阈值附近的平滑斜率。"],
     why: "它让误差信号能够从 spike 穿回膜电位，再穿回突触权重，同时保留真实的离散前向行为。",
     math: [
-      { label: "真实前向", latex: "S=H(V-V_{th})", explain: "推理与训练前向仍输出 0/1。" },
-      { label: "替代反向", latex: "\frac{\partial S}{\partial V}\approx \tilde{\sigma}'(V-V_{th})", explain: "只替换局部导数，不把整网前向改成 sigmoid。" },
-      { label: "Fast sigmoid", latex: "\tilde{\sigma}'(u)=\frac{1}{(1+k|u|)^2}", explain: "k 控制有效梯度窗口的宽窄。" }
+      { label: "真实前向", latex: String.raw`S=H(V-V_{th})`, explain: "推理与训练前向仍输出 0/1。" },
+      { label: "替代反向", latex: String.raw`\frac{\partial S}{\partial V}\approx \tilde{\sigma}'(V-V_{th})`, explain: "只替换局部导数，不把整网前向改成 sigmoid。" },
+      { label: "Fast sigmoid", latex: String.raw`\tilde{\sigma}'(u)=\frac{1}{(1+k|u|)^2}`, explain: "k 控制有效梯度窗口的宽窄。" }
     ],
     concepts: [
       { title: "Shape choice", body: "Sigmoid、fast sigmoid、arctan、triangular 都可用；尺度与宽度会改变梯度流。" },
@@ -144,8 +144,8 @@ export const chapters: Chapter[] = [
     intuition: ["把同一个 LIF 单元在 t₀、t₁、t₂、t₃ 复制展开，复制体共享权重，状态边把它们串起来。Loss 可以从最后或所有时间步产生。"],
     why: "当前 spike 依赖当前膜电位，而当前膜电位依赖上一步。梯度必须跨越这条递归状态链才能把延迟误差归因到早期输入和共享权重。",
     math: [
-      { label: "时间递归", latex: "\frac{\partial L}{\partial V[t]}=\frac{\partial L_t}{\partial V[t]}+\frac{\partial L}{\partial V[t+1]}\frac{\partial V[t+1]}{\partial V[t]}", explain: "梯度包含当前损失与未来状态两部分。" },
-      { label: "权重梯度", latex: "\frac{\partial L}{\partial W}=\sum_t\frac{\partial L}{\partial S[t]}\frac{\partial S[t]}{\partial V[t]}\frac{\partial V[t]}{\partial W}", explain: "中间项由 surrogate derivative 估计。" }
+      { label: "时间递归", latex: String.raw`\frac{\partial L}{\partial V[t]}=\frac{\partial L_t}{\partial V[t]}+\frac{\partial L}{\partial V[t+1]}\frac{\partial V[t+1]}{\partial V[t]}`, explain: "梯度包含当前损失与未来状态两部分。" },
+      { label: "权重梯度", latex: String.raw`\frac{\partial L}{\partial W}=\sum_t\frac{\partial L}{\partial S[t]}\frac{\partial S[t]}{\partial V[t]}\frac{\partial V[t]}{\partial W}`, explain: "中间项由 surrogate derivative 估计。" }
     ],
     concepts: [
       { title: "Memory cost", body: "朴素 BPTT 需要保存 T 个时间步的中间激活，显存与计算通常随 T 增长。" },
@@ -161,8 +161,8 @@ export const chapters: Chapter[] = [
     intuition: ["训练循环的骨架与普通 PyTorch 类似：数据、前向、损失、backward、optimizer。差异集中在时间循环、状态初始化、spike 读出和 surrogate backward。"],
     why: "只有亲手管理状态与时间维，才能辨认框架 API 隐藏了哪些假设。",
     math: [
-      { label: "分类读出", latex: "\hat{y}=\arg\max_c\sum_{t=1}^{T}S_c[t]", explain: "常见做法是累计输出层 spike count。" },
-      { label: "时间平均损失", latex: "L=\frac{1}{T}\sum_t\mathrm{CE}(U_{out}[t],y)", explain: "也可对每步膜电位施加监督，梯度更直接。" }
+      { label: "分类读出", latex: String.raw`\hat{y}=\arg\max_c\sum_{t=1}^{T}S_c[t]`, explain: "常见做法是累计输出层 spike count。" },
+      { label: "时间平均损失", latex: String.raw`L=\frac{1}{T}\sum_t\mathrm{CE}(U_{out}[t],y)`, explain: "也可对每步膜电位施加监督，梯度更直接。" }
     ],
     concepts: [
       { title: "State reset", body: "每个 batch 开始创建零状态，或明确处理跨片段的 stateful 训练。" },
@@ -193,8 +193,8 @@ export const chapters: Chapter[] = [
     intuition: ["Conv 提取每个时间步的空间局部特征，LIF 在同一空间位置上沿时间积累。典型模块是 Conv → Norm → LIF。"],
     why: "事件帧和图像有二维结构。只用全连接会丢掉平移共享与局部感受野。",
     math: [
-      { label: "张量", latex: "\mathbf{X}\in\mathbb{R}^{T\times B\times C\times H\times W}", explain: "T 是时间，B 是 batch，C/H/W 是空间特征维。" },
-      { label: "时空更新", latex: "I[t]=\mathrm{Conv}(S^{l-1}[t]),\quad V[t]=\beta V[t-1]+I[t]", explain: "卷积在空间上共享，状态在时间上延续。" }
+      { label: "张量", latex: String.raw`\mathbf{X}\in\mathbb{R}^{T\times B\times C\times H\times W}`, explain: "T 是时间，B 是 batch，C/H/W 是空间特征维。" },
+      { label: "时空更新", latex: String.raw`I[t]=\mathrm{Conv}(S^{l-1}[t]),\quad V[t]=\beta V[t-1]+I[t]`, explain: "卷积在空间上共享，状态在时间上延续。" }
     ],
     concepts: [
       { title: "Step mode", body: "逐步模式输入 [B,C,H,W]；多步模式一次接收 [T,B,C,H,W]。库的约定不同。" },
@@ -210,7 +210,7 @@ export const chapters: Chapter[] = [
     intuition: ["事件相机不定时输出整张图，而是像素在对数亮度变化越过阈值时产生事件 e=(x,y,t,p)。p 表示变亮或变暗。", "事件流稀疏、异步、时间精度高，与 SNN 的状态和事件通信很契合；但 CNN、Transformer 同样可以处理事件表示。"],
     why: "事件相机在高速运动、高动态范围与低冗余场景很有价值。算法选择取决于任务、表示、硬件和延迟，不由传感器名称决定。",
     math: [
-      { label: "触发条件", latex: "\log I(x,y,t)-\log I(x,y,t-\Delta t)\ge pC", explain: "累计亮度变化超过对比度阈值 C 时触发。" },
+      { label: "触发条件", latex: String.raw`\log I(x,y,t)-\log I(x,y,t-\Delta t)\ge pC`, explain: "累计亮度变化超过对比度阈值 C 时触发。" },
       { label: "事件", latex: "e_k=(x_k,y_k,t_k,p_k)", explain: "每个事件携带位置、时间与极性。" }
     ],
     concepts: [
@@ -228,8 +228,8 @@ export const chapters: Chapter[] = [
     intuition: ["先训练 ANN，再让 SNN 在一段时间内用 spike count 逼近 ReLU 激活。时间越长，rate 近似通常越细，但延迟也越大。"],
     why: "Conversion 借用成熟 ANN 训练配方，避免直接训练深层 SNN 的梯度困难；代价是转换误差、阈值校准与时间步需求。",
     math: [
-      { label: "激活映射", latex: "a^{ANN}\approx V_{th}\frac{1}{T}\sum_{t=1}^{T}S[t]", explain: "平均发放率近似 ANN 的连续激活。" },
-      { label: "残余误差", latex: "\epsilon_T\propto\frac{V[T]-V[0]}{T}", explain: "有限 T 下剩余膜电位造成量化式误差。" }
+      { label: "激活映射", latex: String.raw`a^{ANN}\approx V_{th}\frac{1}{T}\sum_{t=1}^{T}S[t]`, explain: "平均发放率近似 ANN 的连续激活。" },
+      { label: "残余误差", latex: String.raw`\epsilon_T\propto\frac{V[T]-V[0]}{T}`, explain: "有限 T 下剩余膜电位造成量化式误差。" }
     ],
     concepts: [
       { title: "Threshold balancing", body: "逐层校准阈值或权重，防止某层几乎不发放或过度饱和。" },
@@ -246,7 +246,7 @@ export const chapters: Chapter[] = [
     why: "简单替换 ReLU 会破坏 identity mapping 或产生非二值残差。架构设计要同时维护优化路径与事件驱动可部署性。",
     math: [
       { label: "SEW residual", latex: "S_{out}=g(S_{block},S_{identity})", explain: "用逐 spike 的 ADD/AND/IAND 等操作构造易优化的残差。" },
-      { label: "Spiking attention", latex: "Q_s=H(Q),\ K_s=H(K),\ V_s=H(V)", explain: "Q/K/V 以 spike 形式通信，但具体 attention 仍需检查是否包含乘法、softmax 与同步操作。" }
+      { label: "Spiking attention", latex: String.raw`Q_s=H(Q),\quad K_s=H(K),\quad V_s=H(V)`, explain: "Q/K/V 以 spike 形式通信，但具体 attention 仍需检查是否包含乘法、softmax 与同步操作。" }
     ],
     concepts: [
       { title: "Spiking ResNet", body: "核心不是名字，而是残差路径能否传递恒等映射和稳定梯度。" },
@@ -262,7 +262,7 @@ export const chapters: Chapter[] = [
     intuition: ["SNN 的潜力来自稀疏事件、加法式突触累加和局部状态。但在普通 GPU 上，时间循环、稠密张量和 BPTT 可能让它比 ANN 更慢、更耗显存。"],
     why: "“理论操作更少”不等于“整机能量更低”。算法、实现、内存访问、芯片数据流与任务精度必须共同评估。",
     math: [
-      { label: "粗略操作量", latex: "Ops_{SNN}\approx T\cdot r_{spike}\cdot ACs", explain: "时间步 T 与发放率 r 同时决定有效突触累加量。" },
+      { label: "粗略操作量", latex: String.raw`Ops_{SNN}\approx T\cdot r_{spike}\cdot ACs`, explain: "时间步 T 与发放率 r 同时决定有效突触累加量。" },
       { label: "系统能量", latex: "E=E_{compute}+E_{memory}+E_{communication}", explain: "数据移动常常不可忽略。" }
     ],
     concepts: [

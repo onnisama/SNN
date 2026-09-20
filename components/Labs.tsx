@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
 
 const names = ["Spike Train Generator","LIF Simulator","Spike Encoding","Surrogate Gradient","BPTT Visualization","ANN vs SNN","Event Camera Simulator"];
-const blue = "#002fa7", red = "#d72638", ink = "#0b0d12", grid = "#d9dee8", green = "#087f5b";
+const blue = "#145d67", red = "#db7f28", ink = "#14201f", grid = "#d8d6cd", green = "#5f7d68";
 
 function seeded(seed: number) {
   let s = seed >>> 0;

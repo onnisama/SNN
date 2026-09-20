@@ -4,6 +4,7 @@ import Link from "next/link";
 import { ArrowRight, FlaskConical, Library } from "lucide-react";
 import { chapters, totalMinutes } from "@/data/chapters";
 import { useCourseProgress } from "@/components/CourseProgress";
+import { HomeMembraneLab } from "@/components/HomeMembraneLab";
 
 const labNames = ["Spike Train", "LIF Simulator", "Spike Encoding", "Surrogate", "BPTT", "ANN vs SNN", "Event Camera"];
 
@@ -13,31 +14,18 @@ export default function Home() {
     <div className="page-shell">
       <section className="hero-grid">
         <div className="hero-copy">
-          <div className="eyebrow">Interactive course · 中文</div>
-          <h1>SNN<span>Foundations</span></h1>
-          <p className="hero-lead">从“神经元为什么要有状态”开始，沿时间轴理解 LIF、Surrogate Gradient、BPTT、事件视觉与现代 Spiking Transformer。</p>
+          <div className="eyebrow">从一个问题开始</div>
+          <h1>一个神经元，<br/>为什么要<span>记住过去？</span></h1>
+          <p className="hero-lead">普通神经网络把输入映射成输出；脉冲神经元还要携带上一时刻的状态。先观察膜电位怎样积累、泄漏与发放，再进入公式。</p>
           <div className="hero-actions">
-            <Link className="button" href="/course/ann-vs-snn/">开始第一章 <ArrowRight size={17} /></Link>
-            <Link className="button secondary" href="/labs/"><FlaskConical size={17} /> 进入实验室</Link>
+            <Link className="button" href="/course/ann-vs-snn/">按顺序开始 <ArrowRight size={17} /></Link>
+            <Link className="button secondary" href="/labs/"><FlaskConical size={17} /> 自由实验</Link>
           </div>
         </div>
-        <div className="hero-panel">
-          <div className="hero-stat">
-            <strong>12</strong>
-            <span>章 · {totalMinutes} 分钟核心学习路径</span>
-          </div>
-          <div className="signal-panel" aria-label="脉冲序列示意">
-            {[0,1,2,3,4].map((row) => (
-              <div className="signal-row" key={row}>
-                <span>n{row+1}</span>
-                <div className="spike-track">
-                  {Array.from({ length: 18 }, (_, i) => <i key={i} style={{ height: ((i * 7 + row * 5) % (6 + row) === 0) ? `${14 + row * 3}px` : "0px" }} />)}
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
+        <div className="hero-panel"><HomeMembraneLab /></div>
       </section>
+
+      <div className="course-facts"><span><b>12</b> 个递进章节</span><span><b>7</b> 个可操作实验</span><span><b>{totalMinutes}</b> 分钟核心路径</span><span><b>22</b> 篇核验论文</span></div>
 
       <div className="section-head">
         <span className="folio">01</span>

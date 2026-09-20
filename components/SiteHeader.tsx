@@ -2,8 +2,9 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { BookOpen, FlaskConical, Code2, Library, ListTree } from "lucide-react";
+import { BookOpen, FlaskConical, Code2, Library, ListTree, Menu, X } from "lucide-react";
 import { useCourseProgress } from "./CourseProgress";
+import { useState } from "react";
 
 const links = [
   { href: "/", label: "学习路径", icon: BookOpen },
@@ -16,24 +17,25 @@ const links = [
 export function SiteHeader() {
   const path = usePathname();
   const { percent } = useCourseProgress();
+  const [open, setOpen] = useState(false);
   return (
     <header className="site-header">
       <Link className="brand" href="/" aria-label="返回课程首页">
         <span className="brand-mark">S</span>
-        <span>SNN Foundations</span>
+        <span>SNN Foundations <small>FOUNDATION COURSE</small></span>
       </Link>
-      <nav aria-label="主导航">
+      <nav aria-label="主导航" className={open ? "open" : ""}>
         {links.map(({ href, label, icon: Icon }) => (
-          <Link key={href} href={href} className={path === href || (href !== "/" && path.startsWith(href)) ? "active" : ""}>
+          <Link onClick={() => setOpen(false)} key={href} href={href} className={path === href || (href !== "/" && path.startsWith(href)) ? "active" : ""}>
             <Icon size={17} aria-hidden="true" />
             <span>{label}</span>
           </Link>
         ))}
       </nav>
       <div className="header-progress" aria-label={`课程进度 ${percent}%`}>
-        <span>{percent}%</span>
-        <i><b style={{ width: `${percent}%` }} /></i>
+        <span>PROGRESS {percent}%</span>
       </div>
+      <button className="menu-button" aria-label={open ? "关闭菜单" : "打开菜单"} aria-expanded={open} onClick={() => setOpen(!open)}>{open ? <X size={19}/> : <Menu size={19}/>}</button>
     </header>
   );
 }
