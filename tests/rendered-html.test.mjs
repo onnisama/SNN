@@ -29,6 +29,10 @@ test("all rendered course chapters contain valid KaTeX without error nodes", asy
     assert.doesNotMatch(html, /katex-error/, filename);
     assert.equal((html.match(/class="deep-dive"/g) ?? []).length, 2, filename);
     assert.equal((html.match(/class="quiz-item"/g) ?? []).length, 3, filename);
+    const formulas = (html.match(/class="math-card"/g) ?? []).length;
+    assert.ok(formulas >= 2, `${filename}: expected at least two formulas`);
+    assert.equal((html.match(/class="formula-reading"/g) ?? []).length, formulas, `${filename}: every formula needs a plain-language reading`);
+    assert.equal((html.match(/class="worked-example"/g) ?? []).length, formulas, `${filename}: every formula needs a worked example`);
   }
 });
 

@@ -1,0 +1,40 @@
+name: Bug 报告
+description: 报告页面、交互、构建或内容中的可复现问题
+title: "[Bug] "
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: 感谢反馈。若是安全漏洞，请不要在这里公开，请阅读 SECURITY.md。
+  - type: textarea
+    id: problem
+    attributes:
+      label: 问题描述
+      description: 请说明实际发生了什么，以及你原本期望看到什么。
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: 复现步骤
+      placeholder: |
+        1. 打开……
+        2. 调整……
+        3. 看到……
+    validations:
+      required: true
+  - type: input
+    id: page
+    attributes:
+      label: 页面或章节
+      placeholder: 例如 /course/lif-neuron/
+  - type: input
+    id: environment
+    attributes:
+      label: 环境
+      placeholder: 例如 Chrome / Ubuntu 24.04 / 手机宽度 390px
+  - type: textarea
+    id: evidence
+    attributes:
+      label: 补充材料
+      description: 可附截图、控制台信息或相关来源。

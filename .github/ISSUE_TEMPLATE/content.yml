@@ -1,0 +1,31 @@
+name: 教学内容建议
+description: 修正理论、公式、论文信息或改进讲解
+title: "[Content] "
+labels: [content]
+body:
+  - type: input
+    id: location
+    attributes:
+      label: 内容位置
+      description: 请填写章节、公式、论文或具体页面。
+    validations:
+      required: true
+  - type: textarea
+    id: current
+    attributes:
+      label: 当前问题
+      description: 哪句话不准确、难懂或缺少必要解释？
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: 建议修改
+      description: 请说明怎样修改会更准确或更易理解。
+    validations:
+      required: true
+  - type: textarea
+    id: sources
+    attributes:
+      label: 依据与来源
+      description: 理论或论文信息修改请尽量提供一手来源链接。

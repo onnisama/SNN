@@ -15,7 +15,10 @@ const Context = createContext<ProgressContext>({ completed: [], percent: 0, togg
 export function CourseProgressProvider({ children }: { children: React.ReactNode }) {
   const [completed, setCompleted] = useState<string[]>([]);
   useEffect(() => {
-    try { setCompleted(JSON.parse(localStorage.getItem("snn-progress") || "[]")); } catch { setCompleted([]); }
+    let stored: string[] = [];
+    try { stored = JSON.parse(localStorage.getItem("snn-progress") || "[]"); } catch { stored = []; }
+    const frame = requestAnimationFrame(() => setCompleted(stored));
+    return () => cancelAnimationFrame(frame);
   }, []);
   const toggle = (slug: string) => {
     setCompleted(current => {

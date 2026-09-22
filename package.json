@@ -1,24 +1,41 @@
 {
   "name": "snn-foundations-course",
   "version": "1.0.0",
+  "description": "面向深度学习学习者的中文交互式脉冲神经网络基础课程",
   "private": true,
+  "license": "MIT",
+  "keywords": [
+    "snn",
+    "spiking-neural-network",
+    "neuromorphic-computing",
+    "interactive-course",
+    "nextjs"
+  ],
+  "engines": {
+    "node": "24.x"
+  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "test": "npm run build && npm run test:render",
     "test:render": "node --test tests/rendered-html.test.mjs",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "eslint .",
+    "check": "npm run lint && npm test"
   },
   "dependencies": {
-    "@types/node": "^22.10.2",
-    "@types/react": "^19.0.3",
-    "@types/react-dom": "^19.0.2",
     "katex": "^0.16.11",
     "lucide-react": "^0.468.0",
     "next": "^16.3.5",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "@types/react": "^19.0.3",
+    "@types/react-dom": "^19.0.2",
+    "eslint": "9.39.5",
+    "eslint-config-next": "16.3.5",
     "typescript": "^5.7.2"
   }
 }

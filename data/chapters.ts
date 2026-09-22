@@ -98,7 +98,7 @@ export const chapters: Chapter[] = [
     intuition: ["Rate coding 用观察窗内 spike 数量表达强度；temporal coding 用发放时刻表达信息。前者冗余而稳健，后者稀疏且低延迟但对时序噪声更敏感。"],
     why: "静态图像本来没有时间轴。编码方案决定了信息复制次数、延迟、稀疏度和网络能否利用精确时序。",
     math: [
-      { label: "Poisson rate", latex: String.raw`S[t]\sim\mathrm{Bernoulli}(p=x\Delta t)`, explain: "归一化强度控制每步发放概率。" },
+      { label: "Poisson rate", latex: String.raw`S[t]\sim\mathrm{Bernoulli}(p=r_{max}x\Delta t)`, explain: "归一化强度先映射为发放率，再得到每步发放概率。" },
       { label: "Latency", latex: String.raw`t_{spike}=t_{min}+(1-x)(t_{max}-t_{min})`, explain: "强输入更早发放，通常每个神经元只发一次。" }
     ],
     concepts: [
@@ -210,7 +210,7 @@ export const chapters: Chapter[] = [
     intuition: ["事件相机不定时输出整张图，而是像素在对数亮度变化越过阈值时产生事件 e=(x,y,t,p)。p 表示变亮或变暗。", "事件流稀疏、异步、时间精度高，与 SNN 的状态和事件通信很契合；但 CNN、Transformer 同样可以处理事件表示。"],
     why: "事件相机在高速运动、高动态范围与低冗余场景很有价值。算法选择取决于任务、表示、硬件和延迟，不由传感器名称决定。",
     math: [
-      { label: "触发条件", latex: String.raw`\log I(x,y,t)-\log I(x,y,t-\Delta t)\ge pC`, explain: "累计亮度变化超过对比度阈值 C 时触发。" },
+      { label: "触发条件", latex: String.raw`\Delta L=\log I(t)-\log I(t_{ref}),\quad |\Delta L|\ge C,\quad p=\mathrm{sign}(\Delta L)`, explain: "累计对数亮度变化超过阈值 C 时触发，并用极性记录变化方向。" },
       { label: "事件", latex: "e_k=(x_k,y_k,t_k,p_k)", explain: "每个事件携带位置、时间与极性。" }
     ],
     concepts: [
@@ -262,7 +262,7 @@ export const chapters: Chapter[] = [
     intuition: ["SNN 的潜力来自稀疏事件、加法式突触累加和局部状态。但在普通 GPU 上，时间循环、稠密张量和 BPTT 可能让它比 ANN 更慢、更耗显存。"],
     why: "“理论操作更少”不等于“整机能量更低”。算法、实现、内存访问、芯片数据流与任务精度必须共同评估。",
     math: [
-      { label: "粗略操作量", latex: String.raw`Ops_{SNN}\approx T\cdot r_{spike}\cdot ACs`, explain: "时间步 T 与发放率 r 同时决定有效突触累加量。" },
+      { label: "粗略操作量", latex: String.raw`Ops_{SNN}\approx T\cdot r_{spike}\cdot N_{syn}`, explain: "时间步、发放率与满活动时的突触数共同决定有效累加量。" },
       { label: "系统能量", latex: "E=E_{compute}+E_{memory}+E_{communication}", explain: "数据移动常常不可忽略。" }
     ],
     concepts: [

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { categories, papers } from "@/data/papers";
 import { ExternalLink } from "lucide-react";
 import { useSearchParams } from "next/navigation";
@@ -30,14 +30,12 @@ export function PapersLibrary() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const requested = searchParams.get("category");
-  const [category,setCategory]=useState(categories.includes(requested ?? "") ? requested! : "全部"),[open,setOpen]=useState<string|null>(null);
-  useEffect(() => {
-    setCategory(categories.includes(requested ?? "") ? requested! : "全部");
-  }, [requested]);
+  const category=categories.includes(requested ?? "") ? requested! : "全部";
+  const [open,setOpen]=useState<string|null>(null);
   const shown=category==="全部"?papers:papers.filter(p=>p.category===category);
   return <section id="library">
     <div className="section-head"><span className="folio">LIB</span><h2>论文索引</h2><p>{shown.length} 篇 · 按问题而不是模型名阅读。</p></div>
-    <div className="paper-toolbar">{categories.map(item=><button key={item} aria-pressed={category===item} className={category===item?"active":""} onClick={()=>{setCategory(item);router.replace(item==="全部"?"/papers/#library":`/papers/?category=${encodeURIComponent(item)}#library`,{scroll:false})}}>{item}</button>)}</div>
+    <div className="paper-toolbar">{categories.map(item=><button key={item} aria-pressed={category===item} className={category===item?"active":""} onClick={()=>router.replace(item==="全部"?"/papers/#library":`/papers/?category=${encodeURIComponent(item)}#library`,{scroll:false})}>{item}</button>)}</div>
     <div className="paper-list">
       {shown.map(p=><article className="paper-card" key={p.id}>
         <div className="paper-meta"><span className="level">{p.level}</span><br/>{p.year}<br/>{p.venue}<br/>CCF {p.ccf}<br/>{p.category}</div>

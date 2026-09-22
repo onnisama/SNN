@@ -2,21 +2,23 @@
 
 import { useMemo, useState } from "react";
 
+function simulateTrace(current: number, beta: number, threshold: number) {
+  let membrane = 0;
+  return Array.from({ length: 18 }, (_, t) => {
+    const input = t < 2 ? 0 : current;
+    membrane = beta * membrane + input;
+    const beforeReset = membrane;
+    const spike = membrane >= threshold;
+    if (spike) membrane -= threshold;
+    return { t, input, mem: beforeReset, spike };
+  });
+}
+
 export function HomeMembraneLab() {
   const [current, setCurrent] = useState(0.32);
   const [beta, setBeta] = useState(0.82);
   const threshold = 1;
-  const trace = useMemo(() => {
-    let mem = 0;
-    return Array.from({ length: 18 }, (_, t) => {
-      const input = t < 2 ? 0 : current;
-      mem = beta * mem + input;
-      const beforeReset = mem;
-      const spike = mem >= threshold;
-      if (spike) mem -= threshold;
-      return { t, input, mem: beforeReset, spike };
-    });
-  }, [current, beta]);
+  const trace = useMemo(() => simulateTrace(current, beta, threshold), [current, beta]);
   const path = trace.map((p, i) => `${i ? "L" : "M"} ${(28 + i * 25.4).toFixed(1)} ${(164 - Math.min(1.25, p.mem) * 100).toFixed(2)}`).join(" ");
 
   return (

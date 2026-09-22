@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
 const names = ["Spike Train Generator","LIF Simulator","Spike Encoding","Surrogate Gradient","BPTT Visualization","ANN vs SNN","Event Camera Simulator"];
@@ -108,8 +108,7 @@ function EventCameraLab(){
 function Lab({title,intro,children}:{title:string;intro:string;children:React.ReactNode}){return <><div className="eyebrow">Interactive Lab</div><h1>{title}</h1><p className="hero-lead">{intro}</p><div className="lab-card">{children}</div></>}
 
 export function Labs(){
-  const search=useSearchParams(); const router=useRouter(); const initial=Math.max(0,Math.min(6,Number(search.get("lab")||1)-1)); const [active,setActive]=useState(initial);
-  useEffect(()=>{setActive(Math.max(0,Math.min(6,Number(search.get("lab")||1)-1)))},[search]);
+  const search=useSearchParams(); const router=useRouter(); const active=Math.max(0,Math.min(6,Number(search.get("lab")||1)-1));
   const labs=[<SpikeTrainLab key="1"/>,<LIFLab key="2"/>,<EncodingLab key="3"/>,<SurrogateLab key="4"/>,<BPTTLab key="5"/>,<AnnSnnLab key="6"/>,<EventCameraLab key="7"/>];
-  return <div className="lab-grid"><aside className="lab-nav" aria-label="实验列表">{names.map((name,i)=><button type="button" aria-pressed={active===i} key={name} className={active===i?"active":""} onClick={()=>{setActive(i);router.replace(`/labs/?lab=${i+1}`,{scroll:false})}}>{String(i+1).padStart(2,"0")} {name}</button>)}</aside><section className="lab-workspace">{labs[active]}</section></div>
+  return <div className="lab-grid"><aside className="lab-nav" aria-label="实验列表">{names.map((name,i)=><button type="button" aria-pressed={active===i} key={name} className={active===i?"active":""} onClick={()=>router.replace(`/labs/?lab=${i+1}`,{scroll:false})}>{String(i+1).padStart(2,"0")} {name}</button>)}</aside><section className="lab-workspace">{labs[active]}</section></div>
 }
