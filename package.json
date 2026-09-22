@@ -31,11 +31,11 @@
     "react-dom": "^19.0.0"
   },
   "devDependencies": {
-    "@types/node": "^22.10.2",
+    "@types/node": "^26.6.2",
     "@types/react": "^19.0.3",
     "@types/react-dom": "^19.0.2",
-    "eslint": "9.39.5",
+    "eslint": "10.11.0",
     "eslint-config-next": "16.3.5",
-    "typescript": "^5.7.2"
+    "typescript": "^7.0.2"
   }
 }
